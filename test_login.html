@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Login - Password Vault</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center px-4">
+    <div class="max-w-md w-full">
+        <div class="bg-white rounded-lg shadow-lg p-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Login Test</h2>
+            
+            <div id="loginSection" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                    <input type="text" id="login-username" placeholder="Enter username..." 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <input type="password" id="login-password" placeholder="Enter password..." 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                </div>
+                
+                <div class="flex space-x-3">
+                    <button onclick="login()" class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700">
+                        Login
+                    </button>
+                    <button onclick="showSignup()" class="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700">
+                        Sign Up
+                    </button>
+                </div>
+            </div>
+            
+            <div id="userSection" class="hidden">
+                <div class="text-center">
+                    <h3 class="text-lg font-semibold text-gray-800">Welcome, <span id="loggedInUser"></span>!</h3>
+                    <button onclick="logout()" class="mt-4 bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700">
+                        Logout
+                    </button>
+                </div>
+            </div>
+            
+            <div class="mt-6 text-center">
+                <a href="index.html" class="text-blue-600 hover:text-blue-800">Back to Home</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function login() {
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+            
+            if (!username || !password) {
+                alert('Please enter username and password');
+                return;
+            }
+            
+            localStorage.setItem('currentUser', username);
+            localStorage.setItem('isLoggedIn', 'true');
+            
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('userSection').classList.remove('hidden');
+            document.getElementById('loggedInUser').textContent = username;
+            
+            alert('Login successful! Welcome ' + username);
+        }
+        
+        function showSignup() {
+            const username = prompt('Enter desired username:');
+            if (username) {
+                const password = prompt('Create password:');
+                if (password) {
+                    localStorage.setItem('currentUser', username);
+                    localStorage.setItem('isLoggedIn', 'true');
+                    
+                    document.getElementById('loginSection').classList.add('hidden');
+                    document.getElementById('userSection').classList.remove('hidden');
+                    document.getElementById('loggedInUser').textContent = username;
+                    
+                    alert('Account created! Welcome ' + username);
+                }
+            }
+        }
+        
+        function logout() {
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('isLoggedIn');
+            
+            document.getElementById('loginSection').classList.remove('hidden');
+            document.getElementById('userSection').classList.add('hidden');
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            const currentUser = localStorage.getItem('currentUser');
+            
+            if (isLoggedIn === 'true' && currentUser) {
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('userSection').classList.remove('hidden');
+                document.getElementById('loggedInUser').textContent = currentUser;
+            }
+        });
+    </script>
+</body>
+</html>

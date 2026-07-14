@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Password Vault</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: #ff69b4;
+        }
+        
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .neon-glow {
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8),
+                         0 0 20px rgba(255, 255, 255, 0.6),
+                         0 0 30px rgba(255, 255, 255, 0.4);
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen flex items-center justify-center px-4">
+    <div class="max-w-md w-full">
+        <div class="bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20">
+            <!-- Animated Header -->
+            <div class="text-center mb-8">
+                <div class="float-animation inline-block mb-6">
+                    <div class="bg-white/20 backdrop-blur-lg rounded-full p-6 inline-block">
+                        <i class="fas fa-shield-alt text-6xl text-white neon-glow"></i>
+                    </div>
+                </div>
+                
+                <h1 class="text-4xl md:text-5xl font-black text-white mb-6 neon-glow">
+                    PASSWORD VAULT
+                </h1>
+                <p class="text-lg text-white/90 font-medium mb-8">
+                    Secure Account Access
+                </p>
+            </div>
+            
+            <!-- Login/Signup Form -->
+            <div id="authSection" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-white mb-2">Username</label>
+                    <input type="text" id="login-username" placeholder="Enter your username..." 
+                           class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:ring-2 focus:ring-purple-500">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-white mb-2">Password</label>
+                    <input type="password" id="login-password" placeholder="Enter your password..." 
+                           class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:ring-2 focus:ring-purple-500">
+                </div>
+                
+                <div class="flex space-x-3">
+                    <button onclick="login()" class="flex-1 bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 transition duration-200 font-semibold">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Login
+                    </button>
+                    <button onclick="showSignup()" class="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-200 font-semibold">
+                        <i class="fas fa-user-plus mr-2"></i>Sign Up
+                    </button>
+                </div>
+            </div>
+            
+            <!-- User Dashboard (Hidden by default) -->
+            <div id="userSection" class="hidden">
+                <div class="text-center mb-6">
+                    <div class="inline-block bg-green-500/20 rounded-full p-4">
+                        <i class="fas fa-user-check text-3xl text-green-400"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-white mb-2">Welcome, <span id="loggedInUser"></span>!</h3>
+                    <p class="text-white/80 mb-6">You can now save and manage your passwords</p>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <button onclick="viewSavedPasswords()" class="bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition duration-200">
+                        <i class="fas fa-list mr-2"></i>View Saved
+                    </button>
+                    <button onclick="goToGenerator()" class="bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-200">
+                        <i class="fas fa-key mr-2"></i>Generate
+                    </button>
+                </div>
+                
+                <div class="mt-6">
+                    <button onclick="logout()" class="w-full bg-red-600 text-white py-3 px-4 rounded-lg hover:bg-red-700 transition duration-200">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Back to Home -->
+            <div class="text-center mt-6">
+                <a href="index.html" class="bg-white/20 backdrop-blur-lg text-white px-6 py-3 rounded-full hover:bg-white/30 transition-all duration-300 border border-white/30 inline-block">
+                    <i class="fas fa-home mr-2"></i>Back to Home
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Login functionality
+        function login() {
+            console.log('Login function called');
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+            
+            console.log('Username:', username);
+            console.log('Password:', password ? 'entered' : 'empty');
+            
+            if (!username || !password) {
+                alert('Please enter username and password');
+                return;
+            }
+            
+            // Store user session
+            localStorage.setItem('currentUser', username);
+            localStorage.setItem('isLoggedIn', 'true');
+            
+            // Show logged in state
+            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('userSection').classList.remove('hidden');
+            document.getElementById('loggedInUser').textContent = username;
+            
+            // Initialize password storage
+            if (!localStorage.getItem('passwords_' + username)) {
+                localStorage.setItem('passwords_' + username, JSON.stringify([]));
+            }
+            
+            alert('Login successful! Welcome ' + username);
+        }
+        
+        // Show signup form
+        function showSignup() {
+            console.log('Signup function called');
+            const username = prompt('Enter your desired username:');
+            if (username) {
+                const password = prompt('Create your password:');
+                if (password) {
+                    // Store new user
+                    localStorage.setItem('currentUser', username);
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('passwords_' + username, JSON.stringify([]));
+                    
+                    // Show logged in state
+                    document.getElementById('authSection').classList.add('hidden');
+                    document.getElementById('userSection').classList.remove('hidden');
+                    document.getElementById('loggedInUser').textContent = username;
+                    
+                    alert('Account created successfully! Welcome ' + username + '!');
+                }
+            }
+        }
+        
+        // Logout functionality
+        function logout() {
+            console.log('Logout function called');
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('isLoggedIn');
+            
+            // Show login form
+            document.getElementById('authSection').classList.remove('hidden');
+            document.getElementById('userSection').classList.add('hidden');
+        }
+        
+        // View saved passwords
+        function viewSavedPasswords() {
+            const currentUser = localStorage.getItem('currentUser');
+            if (!currentUser) {
+                alert('Please login to view saved passwords');
+                return;
+            }
+            
+            const passwords = JSON.parse(localStorage.getItem('passwords_' + currentUser) || '[]');
+            
+            if (passwords.length === 0) {
+                alert('No saved passwords yet. Start generating and saving passwords!');
+                return;
+            }
+            
+            let passwordList = '=== YOUR SAVED PASSWORDS ===\n\n';
+            passwords.forEach((pwd, index) => {
+                passwordList += `${index + 1}. Website: ${pwd.website}\n`;
+                passwordList += `   Username: ${pwd.username}\n`;
+                passwordList += `   Password: ${pwd.password}\n`;
+                passwordList += `   Created: ${new Date(pwd.createdAt).toLocaleDateString()}\n\n`;
+            });
+            
+            alert(passwordList);
+        }
+        
+        // Go to generator
+        function goToGenerator() {
+            window.location.href = 'index.html';
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Page loaded');
+            
+            // Check if user is logged in
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            const currentUser = localStorage.getItem('currentUser');
+            
+            console.log('Is logged in:', isLoggedIn);
+            console.log('Current user:', currentUser);
+            
+            if (isLoggedIn === 'true' && currentUser) {
+                document.getElementById('authSection').classList.add('hidden');
+                document.getElementById('userSection').classList.remove('hidden');
+                document.getElementById('loggedInUser').textContent = currentUser;
+            }
+        });
+    </script>
+</body>
+</html>

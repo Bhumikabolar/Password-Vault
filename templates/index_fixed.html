@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔐 Password Vault - ML Security</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #fda085 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .slide-in {
+            animation: slideIn 0.8s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .neon-glow {
+            text-shadow: 0 0 10px rgba(139, 92, 246, 0.8),
+                         0 0 20px rgba(139, 92, 246, 0.6),
+                         0 0 30px rgba(139, 92, 246, 0.4);
+        }
+        
+        .strength-very-weak { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .strength-weak { background: linear-gradient(135deg, #f97316, #ea580c); }
+        .strength-fair { background: linear-gradient(135deg, #eab308, #ca8a04); }
+        .strength-good { background: linear-gradient(135deg, #84cc16, #65a30d); }
+        .strength-strong { background: linear-gradient(135deg, #22c55e, #16a34a); }
+        
+        .password-strength-bar {
+            transition: width 0.3s ease-in-out, background-color 0.3s ease-in-out;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        main {
+            display: none;
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen">
+    <!-- Welcome Section -->
+    <div id="welcomeSection" class="min-h-screen flex items-center justify-center px-4">
+        <div class="max-w-6xl w-full">
+            <!-- Animated Header -->
+            <div class="text-center mb-16 slide-in">
+                <div class="float-animation inline-block mb-6">
+                    <div class="bg-white/20 backdrop-blur-lg rounded-full p-6 inline-block">
+                        <i class="fas fa-shield-alt text-6xl text-white neon-glow"></i>
+                    </div>
+                </div>
+                
+                <h1 class="text-6xl md:text-7xl font-black text-white mb-4 neon-glow">
+                    PASSWORD VAULT
+                </h1>
+                <p class="text-xl md:text-2xl text-white/90 font-medium mb-2">
+                    🤖 AI-Powered Security Analysis
+                </p>
+                <p class="text-lg text-white/80">
+                    Level up your password game with machine intelligence
+                </p>
+                
+                <div class="mt-8 flex justify-center space-x-4">
+                    <span class="bg-white/20 backdrop-blur px-4 py-2 rounded-full text-white text-sm">
+                        <i class="fas fa-bolt mr-2"></i>Lightning Fast
+                    </span>
+                    <span class="bg-white/20 backdrop-blur px-4 py-2 rounded-full text-white text-sm">
+                        <i class="fas fa-brain mr-2"></i>ML Powered
+                    </span>
+                    <span class="bg-white/20 backdrop-blur px-4 py-2 rounded-full text-white text-sm">
+                        <i class="fas fa-lock mr-2"></i>Ultra Secure
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Main Options Grid -->
+            <div class="grid md:grid-cols-3 gap-8 mb-12">
+                <!-- Analyze Password Card -->
+                <div onclick="showSection('analyze')" class="card-hover bg-white/10 backdrop-blur-lg rounded-3xl p-8 cursor-pointer border border-white/20 hover:bg-white/20 transition-all duration-300">
+                    <div class="text-center">
+                        <div class="bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl p-6 inline-block mb-6 pulse-animation">
+                            <i class="fas fa-search text-4xl text-white"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-3">Analyze Password</h3>
+                        <p class="text-white/80 mb-6">
+                            Check how strong your passwords really are with our AI analysis
+                        </p>
+                        <div class="bg-white/20 rounded-full px-6 py-3 inline-block">
+                            <span class="text-white font-semibold">
+                                <i class="fas fa-arrow-right mr-2"></i>Check Strength
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Generate Password Card -->
+                <div onclick="showSection('generate')" class="card-hover bg-white/10 backdrop-blur-lg rounded-3xl p-8 cursor-pointer border border-white/20 hover:bg-white/20 transition-all duration-300">
+                    <div class="text-center">
+                        <div class="bg-gradient-to-br from-green-500 to-teal-600 rounded-2xl p-6 inline-block mb-6 pulse-animation">
+                            <i class="fas fa-key text-4xl text-white"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-3">Generate Password</h3>
+                        <p class="text-white/80 mb-6">
+                            Create unhackable passwords with smart generation options
+                        </p>
+                        <div class="bg-white/20 rounded-full px-6 py-3 inline-block">
+                            <span class="text-white font-semibold">
+                                <i class="fas fa-arrow-right mr-2"></i>Create New
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Strengthen Password Card -->
+                <div onclick="showSection('strengthen')" class="card-hover bg-white/10 backdrop-blur-lg rounded-3xl p-8 cursor-pointer border border-white/20 hover:bg-white/20 transition-all duration-300">
+                    <div class="text-center">
+                        <div class="bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl p-6 inline-block mb-6 pulse-animation">
+                            <i class="fas fa-shield-alt text-4xl text-white"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-3">Strengthen Password</h3>
+                        <p class="text-white/80 mb-6">
+                            Upgrade weak passwords while keeping them memorable
+                        </p>
+                        <div class="bg-white/20 rounded-full px-6 py-3 inline-block">
+                            <span class="text-white font-semibold">
+                                <i class="fas fa-arrow-right mr-2"></i>Boost Security
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Back Button -->
+        <div class="text-center mb-6">
+            <button onclick="showWelcome()" class="bg-white/20 backdrop-blur-lg text-white px-8 py-3 rounded-full hover:bg-white/30 transition-all duration-300 border border-white/30">
+                <i class="fas fa-home mr-2"></i>Back to Home
+            </button>
+        </div>
+
+        <!-- Analyze Tab -->
+        <div id="analyze-content" class="tab-content bg-white/10 backdrop-blur-lg rounded-2xl p-6 mb-6">
+            <h2 class="text-2xl font-bold text-white mb-4 flex items-center">
+                <i class="fas fa-search mr-3 text-blue-400"></i>
+                Password Analysis
+            </h2>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-white mb-2">Enter Password</label>
+                    <input type="password" id="analyze-password" placeholder="Type your password here..." 
+                           class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <button onclick="togglePasswordVisibility('analyze-password')" class="mt-2 text-sm text-blue-300 hover:text-blue-200">
+                        <i class="fas fa-eye mr-1"></i>Show/Hide Password
+                    </button>
+                </div>
+                
+                <button onclick="analyzePassword()" class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-200 font-semibold">
+                    <i class="fas fa-shield-alt mr-2"></i>Analyze Strength
+                </button>
+            </div>
+            
+            <div id="analysis-results" class="mt-6">
+                <div class="text-white/60 text-center py-8">
+                    <i class="fas fa-lock text-4xl mb-4"></i>
+                    <p>Enter a password to see analysis results</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Generate Tab -->
+        <div id="generate-content" class="tab-content bg-white/10 backdrop-blur-lg rounded-2xl p-6 mb-6">
+            <h2 class="text-2xl font-bold text-white mb-4 flex items-center">
+                <i class="fas fa-key mr-3 text-green-400"></i>
+                Password Generator
+            </h2>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-white mb-2">Password Type</label>
+                    <select id="password-type" onchange="updateGeneratorOptions()" class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white focus:ring-2 focus:ring-green-500">
+                        <option value="random">Random Password</option>
+                        <option value="passphrase">Passphrase</option>
+                        <option value="pronounceable">Pronounceable</option>
+                    </select>
+                </div>
+                
+                <div id="generator-options">
+                    <!-- Options will be dynamically updated -->
+                </div>
+                
+                <button onclick="generatePassword()" class="w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition duration-200 font-semibold">
+                    <i class="fas fa-magic mr-2"></i>Generate Password
+                </button>
+            </div>
+            
+            <div id="generated-password" class="mt-6">
+                <div class="text-white/60 text-center py-8">
+                    <i class="fas fa-key text-4xl mb-4"></i>
+                    <p>Click generate to create a new password</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Strengthen Tab -->
+        <div id="strengthen-content" class="tab-content bg-white/10 backdrop-blur-lg rounded-2xl p-6 mb-6">
+            <h2 class="text-2xl font-bold text-white mb-4 flex items-center">
+                <i class="fas fa-shield-alt mr-3 text-orange-400"></i>
+                Password Strengthening
+            </h2>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-white mb-2">Current Password</label>
+                    <input type="password" id="strengthen-password" placeholder="Enter password to strengthen..." 
+                           class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:ring-2 focus:ring-orange-500">
+                    <button onclick="togglePasswordVisibility('strengthen-password')" class="mt-2 text-sm text-blue-300 hover:text-blue-200">
+                        <i class="fas fa-eye mr-1"></i>Show/Hide Password
+                    </button>
+                </div>
+                
+                <button onclick="strengthenPassword()" class="w-full bg-orange-600 text-white py-3 px-4 rounded-lg hover:bg-orange-700 transition duration-200 font-semibold">
+                    <i class="fas fa-rocket mr-2"></i>Strengthen Password
+                </button>
+            </div>
+            
+            <div id="strengthen-results" class="mt-6">
+                <div class="text-white/60 text-center py-8">
+                    <i class="fas fa-shield-alt text-4xl mb-4"></i>
+                    <p>Enter a password to see strengthening options</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Show welcome page
+        function showWelcome() {
+            document.getElementById('welcomeSection').style.display = 'flex';
+            document.querySelector('main').style.display = 'none';
+        }
+        
+        // Show specific section
+        function showSection(section) {
+            document.getElementById('welcomeSection').style.display = 'none';
+            document.querySelector('main').style.display = 'block';
+            
+            // Hide all content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            
+            // Show selected content
+            document.getElementById(section + '-content').classList.remove('hidden');
+        }
+
+        // Password visibility toggle
+        function togglePasswordVisibility(inputId) {
+            const input = document.getElementById(inputId);
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        // Analyze password
+        async function analyzePassword() {
+            const password = document.getElementById('analyze-password').value;
+            if (!password) {
+                alert('Please enter a password to analyze');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ password: password })
+                });
+
+                const result = await response.json();
+                displayAnalysisResults(result);
+            } catch (error) {
+                console.error('Error analyzing password:', error);
+                alert('Error analyzing password');
+            }
+        }
+
+        // Display analysis results
+        function displayAnalysisResults(result) {
+            const resultsDiv = document.getElementById('analysis-results');
+            
+            const strengthColors = {
+                'Very Weak': 'strength-very-weak',
+                'Weak': 'strength-weak',
+                'Fair': 'strength-fair',
+                'Good': 'strength-good',
+                'Strong': 'strength-strong'
+            };
+
+            const strengthWidth = (result.score + 1) * 20;
+
+            resultsDiv.innerHTML = `
+                <div class="fade-in">
+                    <div class="mb-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-medium text-white">Strength Level</span>
+                            <span class="text-sm font-bold ${result.score >= 3 ? 'text-green-300' : result.score >= 2 ? 'text-yellow-300' : 'text-red-300'}">${result.strength}</span>
+                        </div>
+                        <div class="w-full bg-white/20 rounded-full h-3">
+                            <div class="password-strength-bar ${strengthColors[result.strength]} h-3 rounded-full" style="width: ${strengthWidth}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h3 class="font-semibold mb-2 text-white">Confidence: ${(result.confidence * 100).toFixed(1)}%</h3>
+                        <div class="w-full bg-white/20 rounded-full h-2">
+                            <div class="bg-blue-400 h-2 rounded-full" style="width: ${result.confidence * 100}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h3 class="font-semibold mb-2 text-white">Password Features</h3>
+                        <div class="grid grid-cols-2 gap-2 text-sm text-white/80">
+                            <div><span class="font-medium">Length:</span> ${result.features.length}</div>
+                            <div><span class="font-medium">Uppercase:</span> ${result.features.uppercase_count}</div>
+                            <div><span class="font-medium">Lowercase:</span> ${result.features.lowercase_count}</div>
+                            <div><span class="font-medium">Digits:</span> ${result.features.digit_count}</div>
+                            <div><span class="font-medium">Special:</span> ${result.features.special_count}</div>
+                            <div><span class="font-medium">Entropy:</span> ${result.features.entropy.toFixed(2)}</div>
+                        </div>
+                    </div>
+
+                    ${result.recommendations.length > 0 ? `
+                        <div>
+                            <h3 class="font-semibold mb-2 text-red-300">Recommendations</h3>
+                            <ul class="list-disc list-inside text-sm space-y-1 text-white/80">
+                                ${result.recommendations.map(rec => `<li>${rec}</li>`).join('')}
+                            </ul>
+                        </div>
+                    ` : '<div class="text-green-300 text-sm">✅ Password is strong! No recommendations needed.</div>'}
+                </div>
+            `;
+        }
+
+        // Update generator options
+        function updateGeneratorOptions() {
+            const type = document.getElementById('password-type').value;
+            const optionsDiv = document.getElementById('generator-options');
+            
+            if (type === 'random') {
+                optionsDiv.innerHTML = `
+                    <div>
+                        <label class="block text-sm font-medium text-white mb-2">Length</label>
+                        <input type="range" id="password-length" min="8" max="32" value="16" class="w-full">
+                        <span id="length-display" class="text-sm text-white/60">16</span>
+                    </div>
+                `;
+            } else if (type === 'passphrase') {
+                optionsDiv.innerHTML = `
+                    <div>
+                        <label class="block text-sm font-medium text-white mb-2">Word Count</label>
+                        <input type="range" id="word-count" min="3" max="8" value="4" class="w-full">
+                        <span id="word-count-display" class="text-sm text-white/60">4</span>
+                    </div>
+                `;
+            } else {
+                optionsDiv.innerHTML = `
+                    <div>
+                        <label class="block text-sm font-medium text-white mb-2">Length</label>
+                        <input type="range" id="pronounceable-length" min="8" max="20" value="12" class="w-full">
+                        <span id="pronounceable-length-display" class="text-sm text-white/60">12</span>
+                    </div>
+                `;
+            }
+
+            // Add event listeners
+            const rangeInputs = optionsDiv.querySelectorAll('input[type="range"]');
+            rangeInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    const displayId = this.id.replace('-', '-display');
+                    const display = document.getElementById(displayId);
+                    if (display) {
+                        display.textContent = this.value;
+                    }
+                });
+            });
+        }
+
+        // Generate password
+        async function generatePassword() {
+            const type = document.getElementById('password-type').value;
+            let requestData = { type: type };
+
+            if (type === 'random') {
+                requestData.length = parseInt(document.getElementById('password-length').value);
+            } else if (type === 'passphrase') {
+                requestData.word_count = parseInt(document.getElementById('word-count').value);
+            } else if (type === 'pronounceable') {
+                requestData.length = parseInt(document.getElementById('pronounceable-length').value);
+            }
+
+            try {
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestData)
+                });
+
+                const result = await response.json();
+                displayGeneratedPassword(result);
+            } catch (error) {
+                console.error('Error generating password:', error);
+                alert('Error generating password');
+            }
+        }
+
+        // Display generated password
+        function displayGeneratedPassword(result) {
+            const resultsDiv = document.getElementById('generated-password');
+            
+            resultsDiv.innerHTML = `
+                <div class="fade-in">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-white mb-2">Generated Password</label>
+                        <div class="flex">
+                            <input type="text" value="${result.password}" readonly class="flex-1 px-3 py-2 bg-white/20 border border-white/30 rounded-l-lg text-white">
+                            <button onclick="copyToClipboard('${result.password}')" class="px-4 py-2 bg-blue-600 text-white rounded-r-lg hover:bg-blue-700">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h3 class="font-semibold mb-2 text-white">Strength Analysis</h3>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-lg font-bold ${result.analysis.score >= 3 ? 'text-green-300' : result.analysis.score >= 2 ? 'text-yellow-300' : 'text-red-300'}">${result.analysis.strength}</span>
+                            <span class="text-sm text-white/60">(${(result.analysis.confidence * 100).toFixed(1)}% confidence)</span>
+                        </div>
+                    </div>
+                    
+                    <div class="text-sm text-white/80">
+                        <p>Length: ${result.analysis.features.length} characters</p>
+                        <p>Character types: ${result.analysis.features.char_types}/4</p>
+                        <p>Entropy: ${result.analysis.features.entropy.toFixed(2)}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Strengthen password
+        async function strengthenPassword() {
+            const password = document.getElementById('strengthen-password').value;
+
+            if (!password) {
+                alert('Please enter a password to strengthen');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/strengthen', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ password: password })
+                });
+
+                const result = await response.json();
+                displayStrengthenResults(result);
+            } catch (error) {
+                console.error('Error strengthening password:', error);
+                alert('Error strengthening password');
+            }
+        }
+
+        // Display strengthen results
+        function displayStrengthenResults(result) {
+            const resultsDiv = document.getElementById('strengthen-results');
+            
+            resultsDiv.innerHTML = `
+                <div class="fade-in">
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-white/10 p-4 rounded-lg">
+                            <h3 class="font-semibold mb-2 text-white">Original Password</h3>
+                            <div class="mb-2">
+                                <input type="text" value="${result.original_password}" readonly class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded text-white">
+                            </div>
+                            <div class="text-sm text-white/80">
+                                <p><strong>Strength:</strong> <span class="${result.original_analysis.score >= 3 ? 'text-green-300' : result.original_analysis.score >= 2 ? 'text-yellow-300' : 'text-red-300'}">${result.original_analysis.strength}</span></p>
+                                <p><strong>Score:</strong> ${result.original_analysis.score}/4</p>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-green-500/20 p-4 rounded-lg border border-green-400/30">
+                            <h3 class="font-semibold mb-2 text-white">Strengthened Password</h3>
+                            <div class="mb-2">
+                                <div class="flex">
+                                    <input type="text" value="${result.strengthened_password}" readonly class="flex-1 px-3 py-2 bg-white/20 border border-white/30 rounded-l-lg text-white">
+                                    <button onclick="copyToClipboard('${result.strengthened_password}')" class="px-4 py-2 bg-green-600 text-white rounded-r-lg hover:bg-green-700">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="text-sm text-white/80">
+                                <p><strong>Strength:</strong> <span class="${result.strengthened_analysis.score >= 3 ? 'text-green-300' : result.strengthened_analysis.score >= 2 ? 'text-yellow-300' : 'text-red-300'}">${result.strengthened_analysis.strength}</span></p>
+                                <p><strong>Score:</strong> ${result.strengthened_analysis.score}/4</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Copy to clipboard
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                // Show success message
+                const button = event.target.closest('button');
+                const originalHTML = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check"></i>';
+                button.classList.add('bg-green-600');
+                
+                setTimeout(() => {
+                    button.innerHTML = originalHTML;
+                    button.classList.remove('bg-green-600');
+                }, 2000);
+            });
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateGeneratorOptions();
+        });
+    </script>
+</body>
+</html>
